@@ -101,8 +101,9 @@ type Config struct {
 
 // Options Options structure
 type Options struct {
-	RconTimeout  string `yaml:"rcontimeout"`
-	CacheTimeout string `yaml:"cachetimeout"`
+	RconTimeout        string `yaml:"rcontimeout"`
+	CacheTimeout       string `yaml:"cachetimeout"`
+	BattleMetricsQuery string `yaml:"battlemetrics_query"`
 }
 
 // Server Server structure
