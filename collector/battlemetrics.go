@@ -18,9 +18,10 @@ const (
 
 var (
 	gez = geziyor.NewGeziyor(&geziyor.Options{
-		AllowedDomains: []string{"www.battlemetrics.com"},
-		CachePolicy:    cache.RFC2616,
-		Timeout:        time.Second * 10,
+		BrowserEndpoint: "ws://localhost:3000",
+		AllowedDomains:  []string{"www.battlemetrics.com"},
+		CachePolicy:     cache.RFC2616,
+		Timeout:         time.Second * 10,
 	})
 	rxState = regexp.MustCompile(`<script id="storeBootstrap" type="application/json">(.+?)</script>`)
 )

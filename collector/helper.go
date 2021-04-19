@@ -17,9 +17,8 @@ limitations under the License.
 package collector
 
 import (
-	"log"
-
 	"github.com/galexrt/srcds_exporter/connector"
+	log "github.com/sirupsen/logrus"
 )
 
 func getConnections() map[string]*connector.Connection {
