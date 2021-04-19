@@ -1,28 +1,16 @@
 package collector
 
 import (
+	"context"
 	"encoding/json"
-	"github.com/geziyor/geziyor"
-	"github.com/geziyor/geziyor/cache"
-	"github.com/geziyor/geziyor/client"
+	"github.com/chromedp/chromedp"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/sirupsen/logrus"
-	"regexp"
-	"time"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
 	subSystem  = "battlemetrics"
 	metricName = "rank"
-)
-
-var (
-	gez = geziyor.NewGeziyor(&geziyor.Options{
-		AllowedDomains:  []string{"www.battlemetrics.com"},
-		CachePolicy:     cache.RFC2616,
-		Timeout:         time.Second * 10,
-	})
-	rxState = regexp.MustCompile(`<script id="storeBootstrap" type="application/json">(.+?)</script>`)
 )
 
 type battleMetricsCollector struct {
@@ -42,7 +30,7 @@ func NewBattleMetricsCollector() (Collector, error) {
 }
 
 func (c *battleMetricsCollector) Update(ch chan<- prometheus.Metric) error {
-	res, err := fetch(gez)
+	res, err := fetch()
 	if err != nil {
 		return err
 	}
@@ -57,6 +45,26 @@ func (c *battleMetricsCollector) Update(ch chan<- prometheus.Metric) error {
 			rank, prometheus.GaugeValue, float64(server.Rank))
 	}
 	return nil
+}
+
+func fetch() (gameTrackerState, error) {
+	var state gameTrackerState
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
+	var res string
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(`https://www.battlemetrics.com/servers/tf2?q=uncletopia&sort=score`),
+		chromedp.WaitVisible(`#GameServerPage`, chromedp.ByID),
+		chromedp.Evaluate(`document.getElementById("storeBootstrap").innerHTML;`, &res),
+	)
+	if err != nil {
+		return state, err
+	}
+	if err := json.Unmarshal([]byte(res), &state); err != nil {
+		log.Errorf("Failed to decode: %v", err)
+		return state, err
+	}
+	return state, nil
 }
 
 type gtRules struct {
@@ -377,28 +385,4 @@ type gameTrackerState struct {
 		} `json:"games"`
 		Env interface{} `json:"-"`
 	} `json:"state"`
-}
-
-func fetch(gz *geziyor.Geziyor) (gameTrackerState, error) {
-	var result gameTrackerState
-	doneChan := make(chan bool)
-	parse := func(g *geziyor.Geziyor, r *client.Response) {
-		m := rxState.FindSubmatch(r.Body)
-		if len(m) == 0 {
-			logrus.Errorf("Failed to find json data")
-			doneChan <- true
-			return
-		}
-		var state gameTrackerState
-		if err := json.Unmarshal(m[1], &state); err != nil {
-			logrus.Errorf("Failed to decode: %v", err)
-			doneChan <- true
-			return
-		}
-		result = state
-		doneChan <- true
-	}
-	gz.GetRendered("https://www.battlemetrics.com/servers/tf2?q=uncletopia&sort=score", parse)
-	<-doneChan
-	return result, nil
 }
