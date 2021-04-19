@@ -53,7 +53,7 @@ func fetch() (gameTrackerState, error) {
 	defer cancel()
 	var res string
 	err := chromedp.Run(ctx,
-		chromedp.Navigate(`https://www.battlemetrics.com/servers/tf2?q=uncletopia&sort=score`),
+		chromedp.Navigate(`https://www.battlemetrics.com/servers/tf2?q=uncletopia%20%7C&sort=score&status=online`),
 		chromedp.WaitVisible(`#GameServerPage`, chromedp.ByID),
 		chromedp.Evaluate(`document.getElementById("storeBootstrap").innerHTML;`, &res),
 	)
