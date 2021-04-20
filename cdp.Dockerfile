@@ -10,7 +10,9 @@ RUN PREFIX=. make
 
 FROM chromedp/headless-shell:latest
 LABEL maintainer="Leigh MacDonald <leigh.macdonald@gmail.com>"
-WORKDIR /
+RUN apt update
+RUN apt install dumb-init -y
+WORKDIR /app
 COPY --from=build /build/srcds_exporter .
-ENTRYPOINT ["/srcds_exporter"]
-CMD ["-collectors.enabled", "map,players,rank"]
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["./srcds_exporter", "-collectors.enabled", "map,players,rank", "-config.file", "/app/srcds.yaml"]

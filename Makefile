@@ -63,6 +63,9 @@ format:
 image_latest:
 	docker build -t leighmacdonald/srcds_exporter:latest -f cdp.Dockerfile .
 
+image_run:
+	docker run -it --rm -p 9137:9137 -v `pwd`/srcds.yaml:/app/srcds.yaml leighmacdonald/srcds_exporter:latest
+
 package-%: build
 	mkdir -p -m0755 $(PACKAGE_DIR)/usr/bin $(PACKAGE_DIR)/etc/sysconfig $(PACKAGE_DIR)/etc/srcds_exporter
 	mkdir -p $(PACKAGE_DIR)/etc/sysconfig
