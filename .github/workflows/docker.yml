@@ -28,7 +28,7 @@ jobs:
         with:
           push: true
           file: ./cdp.Dockerfile
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/srcds_exporter:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/srcds_exporter:latest
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
