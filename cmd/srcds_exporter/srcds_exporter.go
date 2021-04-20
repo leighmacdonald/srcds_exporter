@@ -41,7 +41,7 @@ import (
 )
 
 const (
-	defaultCollectors = "map,playercount"
+	defaultCollectors = "map,players,rank"
 )
 
 var (

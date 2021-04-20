@@ -1,6 +1,17 @@
-# srcds_exporter
+# srcds_exporter (w/BattleMetrics)
 
-SRCDS Gameserver Prometheus exporter.
+SRCDS Gameserver Prometheus exporter. This fork includes additional collectors with support for querying
+[battlemetrics rankings](https://www.battlemetrics.com/servers/tf2?q=uncletopia&sort=rank).
+
+### Querying BattleMetrics
+
+Note that in order to query (scrape) battlemetrics results we need a full javascript engine. This required 
+because the data is loaded in dynamically unfortunately. Because of this, the docker image 
+`cdp.Dockerfile` is highly recommended as it is pre-configured to run a headless chrome instance under
+a virtual Xorg instance via `Xvfb`. 
+
+If you are not going to use this functionality it is strongly recommended using the [upstream](https://github.com/galexrt/srcds_exporter) 
+version of this package instead due to the much larger container sizes and increased resources required for it.
 
 [![Docker Repository on Quay](https://quay.io/repository/galexrt/srcds_exporter/status "Docker Repository on Quay")](https://quay.io/repository/galexrt/srcds_exporter) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
@@ -10,6 +21,7 @@ SRCDS Gameserver Prometheus exporter.
 
 * [Garry's Mod](https://store.steampowered.com/app/4000/Garrys_Mod/)
 * [Counter-Strike: Source](https://store.steampowered.com/app/240/CounterStrike_Source/)
+* [Team Fortress 2](https://store.steampowered.com/app/440)
 
 It may work with newer Source Engine games like [Counter-Strike: Global Offensive](http://store.steampowered.com/app/730/CounterStrike_Global_Offensive/) too, but hasn't been tested too much by the project team.
 
@@ -23,10 +35,11 @@ Whick collectors are enabled is controlled by the `--collectors.enabled` flag.
 
 ### Enabled by default
 
-| Name        | Description          |
-| ----------- | -------------------- |
-| playercount | Current player count |
-| map         | Current map played   |
+| Name        | Description                           |
+| ----------- | ------------------------------------- |
+| playercount | Current player count                  |
+| map         | Current map played                    |
+| rank        | Battlemetrics global server rankking  |
 
 ### Disabled by default
 
@@ -48,7 +61,7 @@ Example output:
 $ srcds_exporter --help
 srcds_exporter [FLAGS]
   -collectors.enabled string
-    	Comma separated list of active collectors (default "map,playercount")
+    	Comma separated list of active collectors (default "map,playercount,rank")
   -collectors.print
     	If true, print available collectors and exit.
   -config.file string
@@ -67,6 +80,6 @@ srcds_exporter [FLAGS]
 
 ## Docker Image
 
-The Docker image is available from [Quay.io](https://quay.io):
+The Docker image is available from [Docker Hub](https://hub.docker.com/repository/docker/leighmacdonald/srcds_exporter):
 
-* `quay.io/galexrt/srcds_exporter:TAG`
+* `leighmacdonald/srcds_exporter:latest`
