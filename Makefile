@@ -61,7 +61,7 @@ format:
 	go fmt $(pkgs)
 
 image_latest:
-	docker build -t srcds_exporter:latest -f cdp.Dockerfile .
+	docker build -t leighmacdonald/srcds_exporter:latest -f cdp.Dockerfile .
 
 package-%: build
 	mkdir -p -m0755 $(PACKAGE_DIR)/usr/bin $(PACKAGE_DIR)/etc/sysconfig $(PACKAGE_DIR)/etc/srcds_exporter
